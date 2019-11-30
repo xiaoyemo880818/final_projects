@@ -17,3 +17,7 @@
 	 We will consider the human cost of shuttle service , and the guest number it will increase (we suppose 
 	 that only in holiday we can pick much more guest at nearby airport)
 
+## Hypothesis:
+	1. The closer to the downtown, the more profit we can get.
+	2. A small and economical hotel will make more profit than a big luxury hotel in New York.
+
