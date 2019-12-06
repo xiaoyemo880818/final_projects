@@ -2,25 +2,66 @@
 # calculate weekly profit= revenue-cost
 import numpy as np
 
+TotalGuestNum=
 # total number of guest-----https://www.kaggle.com/new-york-state/nys-air-passenger-traffic,-port-authority-of-ny-nj
 
-# calculate cost
-#---- single room cost---- from real-world data--https://www.kaggle.com/tianhwu/brooklynhomes2003to2017
-# * ---- shuttle cost--- from real-world data  cost---- https://www.kaggle.com/dansbecker/new-york-city-taxi-fare-prediction
 
+
+# calculate cost
+# Manhattan hotel cost http://www.cushmanwakefield.us/en/research-and-insight/2017/focus-on-hotel-construction-costs-2017
+DowntownCost=950000
+distance=np.random.   #(0,30] miles---- reference from googlemap---
+singleRoomCost=DowntownCost/distance # reference from newyork house price----https://www1.nyc.gov/site/finance/taxes/property-rolling-sales-data.page
+
+
+# * ---- shuttle cost--- from real-world data  cost---- https://www.kaggle.com/dansbecker/new-york-city-taxi-fare-prediction
+# shuttle is binomial
+shuttleCost=790  #every day bus cost reference----http://www.freightmetrics.com.au/Calculators%7CRoad/BusOperatingCost/tabid/671/Default.aspx
+plusGuest=100*GuestType
+
+
+
+# *location
+# suppose the guest number have linear negative relationship with distance
+distance
+HighestGuestRate=  0.00018   # !!!!!lack of reference!
+LowestGuestRate=HighestGuestRate/2.5  #reference from TripAdvisor number of reviews
+k=(HighestGuestRate-LowestGuestRate)/30.0
+locationInfluence=HighestGuestRate-k*distance
 
 # calculate revenue
-#---- guest number--- it will be influenced by location--- percentage
-#                     it will be influenced by shuttle---- 7 days
 
 # *---- room number---- random number[uniform distribution]
+# get the distribution of people's travel type-- https://www.kaggle.com/enikolov/reviews-tripadvisor-hotels-and-edmunds-cars/data
+# analyze GuestType by https://www.kaggle.com/crawford/las-vegas-tripadvisor-reviews
+roomNum=np.random.  [50,2000] # reference ctrip website
+GuestType=[]
+HotelGuestNum=TotalGuestNum*locationInfluence
+realBookedRoom=HotelGuestNum*GuestType
+if realBookedRoom<roomNum revenue=realBookedRoom*price
+else revenue=roomNum*price
+
+
+
 
 # *---- room price level---- from real-world data find distribution
 #                         https://www.kaggle.com/airbnb/seattle
+TotalDay=7
+#priceSeed= a number random generate from interval [50,1000]
+LowPrice=[priceSeed,priceSeed*1.5] #reference https://www.kaggle.com/gdberrio/new-york-hotels#
+MediumPrice=[priceSeed*1.5,priceSeed*2]
+HighPrice=[priceSeed*2,priceSeed*2.5]
 
-
+dayRandom=(0.25,0.5,0.25) #total day is 7 and random generate a array
+lowPriceRandom=np.random.# From LowPrice
+mediumPriceRandom=np.random.# From MediumPrice
+highPriceRandom=np.random.# From HighPrice
 
 
 # for-loop to do simulation and output the result
+
+
+
+
 
 # visualization the result
