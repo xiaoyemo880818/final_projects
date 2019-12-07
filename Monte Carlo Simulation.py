@@ -7,6 +7,8 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 DAY=3000
 # can create a class for hotel, have distance attribute, roomNum attribute, guestType attribute, price attribute
+
+#LLY
 class Hotel:
     __distance=np.random.random_integers(50, 2000, 1)# reference Ctrip website
     __roomNum=np.random.uniform(0, 30, 1) # (0,30] miles---- reference from googlemap---
@@ -85,6 +87,7 @@ def getGuestNum(hotel:Hotel,shuttle:Shuttle)->int:
 #     totalPrice=(lowPrice*DayRandom[0]+mediumPrice*DayRandom[1]+highPrice*DayRandom[2])*DAY
 #     return totalPrice
 
+# LLY
 def getBookedRoom(hotel:Hotel,shuttle:Shuttle)->int:
     x = sympy.Symbol('x')
     y = sympy.Symbol('y')
@@ -99,6 +102,7 @@ def getBookedRoom(hotel:Hotel,shuttle:Shuttle)->int:
     realBookedRoom = int(result[x] + result[y] + result[z])
     return realBookedRoom
 
+#LLY
 def calRevenue(hotel:Hotel,shuttle:Shuttle)->int:
     # *---- room number---- random number[uniform distribution]
     # get the distribution of people's travel type-- https://www.kaggle.com/enikolov/reviews-tripadvisor-hotels-and-edmunds-cars/data
@@ -156,6 +160,8 @@ def visualProfit():
 # simulation2: only distance change
 # simulation3: roomNum & price change
 
+
+#LLY
 # simulation4: whether have shuttle or not change
 # simulation5: shuttle frequency change
 # simulation6: simulation number change-----profit average level
