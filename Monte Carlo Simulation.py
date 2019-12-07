@@ -152,4 +152,10 @@ if __name__=='__main__':
 def visualProfit():
     pass
 
-#
+# simulation1: only time change
+# simulation2: only distance change
+# simulation3: roomNum & price change
+
+# simulation4: whether have shuttle or not change
+# simulation5: shuttle frequency change
+# simulation6: simulation number change-----profit average level
