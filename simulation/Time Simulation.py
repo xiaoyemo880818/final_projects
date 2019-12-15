@@ -49,7 +49,6 @@ class Hotel:
 
         :return:
         """
-        # priceSeed = np.random.randint(50, 1000, 1)  # a number random generate from interval [50,1000]
         LowPriceInterval = (self.__priceSeed, self.__priceSeed * 1.5)  # X reference https://www.kaggle.com/gdberrio/new-york-hotels#
         MediumPriceInterval = (self.__priceSeed * 1.5, self.__priceSeed * 2)
         HighPriceInterval = (self.__priceSeed * 2, self.__priceSeed * 2.5)
