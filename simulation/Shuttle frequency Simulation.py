@@ -1,12 +1,17 @@
-# use Numpy to do the simulation
-# calculate profit = revenue-cost = room price * real booked room number - room cost -shuttle cost
+# use Numpy to do the shuttle frequency simulation
+"""
+In this simulation, we try to examine how shuttle frequency influence the average profit. Therefore, in this simulation,
+our main variable is "shuttle frequency". We suppose that the higher shuttle frequency, more profits the hotel will make.
+In order to test a general influence of shuttle frequency, we calculate the average profit of a certain times of simulations
+when shuttle frequency takes each different value.
+"""
+
 import sympy
 import numpy as np
 from matplotlib import pyplot as plt
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-# "DAY" describes the time span, which is the time period that we calculate profit for.
 DAY=300
 
 # create a class for hotel, have distance attribute, roomNum attribute, guestType attribute, price attribute
@@ -68,35 +73,11 @@ class Hotel:
         return self.__price
 
 
-# create a class for shuttle, have cost attribute and shuttleFrequency attribute
-class Shuttle:
-    """
-    We define shuttle class to generate random value of variables relevant to shuttle service.
-    :param dayCost- how much shuttle service will cost per day.
-                    To define its value, we refer to this website http://www.freightmetrics.com.au/Calculators%7CRoad/BusOperatingCost/tabid/671/Default.aspx
-                    We modify some parameters, like the type of bus and average passengers, to get the suitable cost.
-                    You can see more details in Reference_shuttlecost file in Github.
-    :param cost- The total cost of shuttle service for certain days
-    :param shuttleFrequency-how many days the hotel will provide shuttle service within given days
-                            Since shuttle service is a random variable and have only two choices, it satisfy with binomial distribution.
-    """
-    __dayCost=790 # every day bus cost, reference----http://www.freightmetrics.com.au/Calculators%7CRoad/BusOperatingCost/tabid/671/Default.aspx
-    __cost=0
-    __shuttleFrequency=np.random.binomial(DAY,0.5,1) # shuttle is binomial
-
-    def getCost(self):
-        self.__cost=self.__dayCost*self.__shuttleFrequency
-        return self.__cost
-
-    def getFrequency(self):
-        return self.__shuttleFrequency
-
-
 # *location
 # suppose the guest number have linear negative relationship with distance
 # Guest number of a certain hotel, suppose the guest number have linear negative relationship with distance
 
-def getGuestNum(hotel:Hotel,shuttle:Shuttle)->int:
+def getGuestNum(hotel:Hotel,frequency)->int:
     """
     This function is to get the real guest number considering the location impact and the shuttle service impact.
 
@@ -119,24 +100,23 @@ def getGuestNum(hotel:Hotel,shuttle:Shuttle)->int:
     Real Guest of hotel= Guests of hotel without shuttle + Guests brought by shuttle
 
     :param hotel: Hotel object, which represents a new hotel model in our simulation
-    :param shuttle: Shuttle object, which represents a new shuttle model in our simulation
+    :param frequency: describes how many days will the hotel provide shuttle service
     :return: calculated guest number of a certain hotel, which will be used to calculate the hotel revenue
 
-    >>> getGuestNum(1,1)
+    >>> getGuestNum(1,'a')
     Traceback (most recent call last):
-    TypeError: Parameters need to be hotel model and shuttle model.
+    TypeError: Parameters need to be hotel model and an integer.
     """
 
     # Determine whether the parameters are correct
-    if not isinstance(hotel, Hotel) or not isinstance(shuttle, Shuttle):
-        raise TypeError('Parameters need to be hotel model and shuttle model.')
+    if not isinstance(hotel, Hotel) or not int:
+        raise TypeError('Parameters need to be hotel model and an integer.')
     distance=hotel.getDistance()
-    frequency=shuttle.getFrequency()
     # the number of air passenger per month
     GuestInterval=(7000000,11000000) # [7478511,11444185]  it is a uniform distribution-----https://www.kaggle.com/new-york-state/nys-air-passenger-traffic,-port-authority-of-ny-nj
     TotalGuestNum=np.random.random_integers(GuestInterval[0],GuestInterval[1],1)
-    HighestGuestRate=0.00018   # we calculate the rate by "number of reviews*rate of people post reviews/number of guest"
-    LowestGuestRate=HighestGuestRate/2.5  # reference from TripAdvisor number of reviews
+    HighestGuestRate=0.00018 # we calculate the rate by "number of reviews*rate of people post reviews/number of guest"
+    LowestGuestRate=HighestGuestRate/2.5 # reference from TripAdvisor number of reviews
     k=(HighestGuestRate-LowestGuestRate)/30.0 # the range of variable distance is from 0 to 30 miles
     locationInfluence=HighestGuestRate-k*distance # we suppose a negative linear relationship
     # since shuttle will bring more guests for hotels, we need to calculate its influence per day
@@ -144,37 +124,37 @@ def getGuestNum(hotel:Hotel,shuttle:Shuttle)->int:
     plusGuest = 100 * frequency  # this can be improved by random generating shuttle seats
     # plusGuest = shuttlePlusGuest * frequency
     # Real Guest Number = Guests of hotel without shuttle + Guests brought by shuttle
-    hotelGuestNum=TotalGuestNum*locationInfluence+plusGuest
+    hotelGuestNum = TotalGuestNum * locationInfluence + plusGuest
     return hotelGuestNum
 
 
-def getBookedRoom(hotel:Hotel,shuttle:Shuttle)->int:
+def getBookedRoom(hotel:Hotel,frequency)->int:
     """
     This function is to get the real booked room number according to the number of air passenger and the probability distribution of the guests.
     The guests are usually divided into three categories by the number of tourists travelling together, including single traveler, couple traveler and family traveler.
     With the guestType (obtained from https://www.kaggle.com/crawford/las-vegas-tripadvisor-reviews) and the GuestNum （calculated by the function getGuestNum), the real booked room number could be calculated by solving the equations.
 
     :param hotel: Hotel object, which represents a new hotel model in our simulation
-    :param shuttle: Shuttle object, which represents a new shuttle model in our simulation
+    :param frequency: describes how many days will the hotel provide shuttle service
     :return: the real booked number of a certain hotel
 
-    >>> getBookedRoom(1,1)
+    >>> getBookedRoom(1,'a')
     Traceback (most recent call last):
-    TypeError: Parameters need to be hotel model and shuttle model.
+    TypeError: Parameters need to be hotel model and an integer.
     """
 
     # Determine whether the parameters are correct
-    if not isinstance(hotel, Hotel) or not isinstance(shuttle, Shuttle):
-        raise TypeError('Parameters need to be hotel model and shuttle model.')
+    if not isinstance(hotel, Hotel) or not int:
+        raise TypeError('Parameters need to be hotel model and an integer.')
 
     # Solve ternary linear equations
     # x represents the booked number of single room, y represents the booked number of double room or twin room, z represents the booked number of triple room
     # Symbolize variables
-    x = sympy.Symbol('x') # the booked number of single room
-    y = sympy.Symbol('y') # the booked number of double room or twin room
-    z = sympy.Symbol('z') # the booked number of triple room
+    x = sympy.Symbol('x')
+    y = sympy.Symbol('y')
+    z = sympy.Symbol('z')
     guestType=hotel.getGuestType()
-    hotelGuestNum = getGuestNum(hotel,shuttle)
+    hotelGuestNum = getGuestNum(hotel,frequency)
     # hotelGuestNum = x + 2y + 3z
     # 0.59x = 0.19y
     # 0.22x = 0.19z
@@ -187,7 +167,7 @@ def getBookedRoom(hotel:Hotel,shuttle:Shuttle)->int:
     return realBookedRoom
 
 
-def calRevenue(hotel:Hotel,shuttle:Shuttle)->int:
+def calRevenue(hotel:Hotel,frenquency)->int:
     """
     This function is to calculate the revenue of a certain hotel within a given time period.
     Hotel revenue comes from the number of accommodation rooms multiplied by the room price.
@@ -196,31 +176,31 @@ def calRevenue(hotel:Hotel,shuttle:Shuttle)->int:
     If the real booked room number is greater than the hotel room number, which means that the hotel is full, then we use the hotel room number to calculate the revenue of this hotel.
 
     :param hotel: Hotel object, which represents a new hotel model in our simulation
-    :param shuttle: Shuttle object, which represents a new shuttle model in our simulation
+    :param frenquency: describes how many days will the hotel provide shuttle service
     :return: the revenue of a certain hotel within a given time period
 
-    >>> calRevenue(1,1)
+    >>> calRevenue(1,'a')
     Traceback (most recent call last):
-    TypeError: Parameters need to be hotel model and shuttle model.
+    TypeError: Parameters need to be hotel model and an integer.
     """
-    # Determine whether the parameters are correct
-    if not isinstance(hotel, Hotel) or not isinstance(shuttle, Shuttle):
-        raise TypeError('Parameters need to be hotel model and shuttle model.')
 
+    # Determine whether the parameters are correct
+    if not isinstance(hotel, Hotel) or not int:
+        raise TypeError('Parameters need to be hotel model and an integer.')
     roomNum=hotel.getRoomNum()
     totalPrice=hotel.getPrice()
-    realBookedRoom=getBookedRoom(hotel,shuttle)
+    realBookedRoom=getBookedRoom(hotel,frenquency)
     # Compare the real booked room number with the room number of this hotel
     # if the hotel is not full
     if realBookedRoom < roomNum:
         revenue = realBookedRoom * totalPrice
     else:
     # if the hotel is full
-        revenue = roomNum * totalPrice
+        revenue=roomNum * totalPrice
     return revenue
 
 
-def calCost(hotel:Hotel,shuttle:Shuttle)->int:
+def calCost(hotel:Hotel,frequency)->int:
     """
     We define the hotel cost as shuttle service cost plus constructing cost per room.
     Room Constructing Cost:
@@ -236,70 +216,71 @@ def calCost(hotel:Hotel,shuttle:Shuttle)->int:
     Finally we can get total room cost given hotel total room number.
 
     Shuttle Service Cost:
-    The shuttle service cost is a given attribute of Shuttle class.
+    The shuttle service cost is a given number.
 
     :param hotel: Hotel object, which represents a new hotel model in our simulation
-    :param shuttle: Shuttle object, which represents a new shuttle model in our simulation
+    :param frenquency: describes how many days will the hotel provide shuttle service
     :return: Total cost of constructing and operating a hotel, which mainly includes the shuttle cost and hotel room's cost
 
     >>> calCost(1,1)
     Traceback (most recent call last):
-    TypeError: Parameters need to be hotel model and shuttle model.
+    TypeError: Parameters need to be hotel model and an integer.
     """
 
     # Determine whether the parameters are correct
-    if not isinstance(hotel, Hotel) or not isinstance(shuttle, Shuttle):
-        raise TypeError('Parameters need to be hotel model and shuttle model.')
+    if not isinstance(hotel, Hotel) or not int:
+        raise TypeError('Parameters need to be hotel model and an integer.')
     # Calculate single room constructing cost
     distance = hotel.getDistance()
     roomNum = hotel.getRoomNum()
-    DowntownCost = 950000  # Manhattan(highest) hotel cost
+    DowntownCost = 950000 # Manhattan(highest) hotel cost
+    # distance = np.random.uniform(0, 30, 1)  # (0,30] miles---- reference from googlemap---
     singleRoomCost = DowntownCost / distance  # inverse correlation between hotel room cost and distance
-    roomCost = singleRoomCost * roomNum
-    cost=roomCost+shuttle.getCost()
+    roomCost = singleRoomCost*roomNum
+    shuttleDayCost = 790  # every day bus cost, reference----http://www.freightmetrics.com.au/Calculators%7CRoad/BusOperatingCost/tabid/671/Default.aspx
+    shuttleCost = shuttleDayCost * frequency
+    # total cost = room cost + shuttle service cost
+    cost = roomCost+shuttleCost
     return cost
 
 
-def simulation():
+# for-loop to do the shuttle frequency simulation and output the result
+def shuttlefrequencySimulation():
     """
-    This function is to run multiple simulations and obtain the profit distributions.
-    Plot frequency distributions and normal distribution curves for this hotel.
+    This function is to do the shuttle frequency simulation.
+    Calculate the average profit of multiple simulations when the shuttle frequency takes each different value.
 
-    Change the number of simulations to 100, 500, 1000, 5000 separately and analyze how will the profit distribution change.
-
-    :return: the histograms and normal distribution curves for this hotel.
+    :return: the profit change curve with frequency change
     """
-
-    # List of profit results
-    profitresult = []
-    # the number of simulations
-    for i in range(100):
-        hotel = Hotel()
-        shuttle = Shuttle()
-        profit=calRevenue(hotel,shuttle)-calCost(hotel,shuttle)
-        profitresult.append(profit[0])
-    profitresult = np.array(profitresult)
-    # calculate the mean and the standard deviation of the profit results
-    mean = profitresult.mean()
-    std=profitresult.std()
+    # create a list for mean profits of multiple simulations
+    mean = []
+    # let shuttle frequency take different values
+    for frequency in range(0,300,1):
+        # create a list for profit result of each simulation
+        profitresult = []
+        # run multiple simulations
+        for i in range(100):
+            hotel = Hotel()
+            # calculate the profit of hotel
+            profit=calRevenue(hotel,frequency)-calCost(hotel,frequency)
+            profitresult.append(profit[0])
+        profitresult=np.array(profitresult)
+        mean.append(profitresult.mean())
     # data visualization
-    # plot the normal distribution curves
-    x = np.arange(profitresult.min(),profitresult.max(),0.1)
-    y = np.exp(-((x - mean) ** 2) / (2 * std ** 2)) / (std * np.sqrt(2 * np.pi))
-    plt.plot(x, y)
-    # plot the histograms
-    plt.hist(profitresult, bins='auto',density=True)
-    plt.title("Profit Average Level")
-    plt.xlabel('Profit')
-    plt.ylabel('Frequency')
+    x = np.arange(0, 300, 1)
+    y = mean
+    plt.title("Shuttle Frequency Simulation")
+    plt.xlabel('Shuttle Frequency')
+    plt.ylabel('Profit')
+    plt.plot(x, y, color='lightblue')
+    # save the picture
+    # plt.savefig('/Users/linyaoli/Documents/ShuttleFrequency.png')
     plt.show()
 
 
 if __name__=='__main__':
-    simulation()
+    shuttlefrequencySimulation()
+    # print(mean)
 
-# We will do four simulations, the simulation that we did in this file is simulation 4, you can see other simulation files under the folder Simulation in Github.
-# simulation1: only time change
-# simulation2: only distance change
+
 # simulation3: shuttle frequency change
-# simulation4: simulation number change-----profit average level
