@@ -299,7 +299,7 @@ if __name__=='__main__':
     simulation()
 
 # We will do four simulations, the simulation that we did in this file is simulation 4, you can see other simulation files under the folder Simulation in Github.
-# simulation1: only time change
-# simulation2: only distance change
-# simulation3: shuttle frequency change
-# simulation4: simulation number change-----profit average level
+# simulation1: location changes
+# simulation2: time changes
+# simulation3: shuttle frequency changes
+# simulation4: simulation number changes-----profit average level
